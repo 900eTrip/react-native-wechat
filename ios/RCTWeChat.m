@@ -148,6 +148,18 @@ RCT_EXPORT_METHOD(shareToTimeline:(NSDictionary *)data
     [self shareToWeixinWithData:data scene:WXSceneTimeline callback:callback];
 }
 
+//拉起微信小程序
+RCT_EXPORT_METHOD(launchMiniProgram:(NSString*)userName path:(NSString*)path miniProgramType:(NSInteger)miniProgramType callback:(RCTResponseSenderBlock)callback)
+{
+    WXLaunchMiniProgramReq *launchMiniProgramReq = [WXLaunchMiniProgramReq object];
+    launchMiniProgramReq.userName = userName;  //拉起的小程序的username
+    launchMiniProgramReq.path = path;    //拉起小程序页面的可带参路径，不填默认拉起小程序首页
+    launchMiniProgramReq.miniProgramType = miniProgramType; //拉起小程序的类型
+    callback(@[([WXApi openWXApp] ? [NSNull null] : INVOKE_FAILED)]);
+    callback(@[[WXApi sendReq:launchMiniProgramReq] ? [NSNull null] : INVOKE_FAILED]);
+
+}
+
 RCT_EXPORT_METHOD(shareToSession:(NSDictionary *)data
                   :(RCTResponseSenderBlock)callback)
 {
@@ -254,7 +266,7 @@ RCT_EXPORT_METHOD(pay:(NSDictionary *)data
                 } else {
                     WXImageObject *imageObject = [WXImageObject object];
                     imageObject.imageData = UIImagePNGRepresentation(image);
-                    
+
                     [self shareToWeixinWithMediaMessage:aScene
                                                   Title:title
                                             Description:description
@@ -264,7 +276,7 @@ RCT_EXPORT_METHOD(pay:(NSDictionary *)data
                                              ThumbImage:aThumbImage
                                                MediaTag:mediaTagName
                                                callBack:callback];
-                    
+
                 }
             }];
         } else if ([type isEqualToString:RCTWXShareTypeFile]) {
@@ -361,7 +373,7 @@ RCT_EXPORT_METHOD(pay:(NSDictionary *)data
 	if([resp isKindOfClass:[SendMessageToWXResp class]])
 	{
 	    SendMessageToWXResp *r = (SendMessageToWXResp *)resp;
-    
+
 	    NSMutableDictionary *body = @{@"errCode":@(r.errCode)}.mutableCopy;
 	    body[@"errStr"] = r.errStr;
 	    body[@"lang"] = r.lang;
@@ -376,10 +388,10 @@ RCT_EXPORT_METHOD(pay:(NSDictionary *)data
 	    body[@"lang"] = r.lang;
 	    body[@"country"] =r.country;
 	    body[@"type"] = @"SendAuth.Resp";
-    
+
 	    if (resp.errCode == WXSuccess) {
 	        if (self.appId && r) {
-		    // ios第一次获取不到appid会卡死，加个判断OK		
+		    // ios第一次获取不到appid会卡死，加个判断OK
 		    [body addEntriesFromDictionary:@{@"appid":self.appId, @"code":r.code}];
 		    [self.bridge.eventDispatcher sendDeviceEventWithName:RCTWXEventName body:body];
 	        }

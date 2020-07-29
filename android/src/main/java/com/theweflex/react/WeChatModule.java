@@ -398,7 +398,15 @@ public class WeChatModule extends ReactContextBaseJavaModule implements IWXAPIEv
         }
         return ret;
     }
-
+    //拉起小程序
+    @ReactMethod
+    public void launchMiniProgram(String userName, String path, int minProgramType, Callback callback) {
+        WXLaunchMiniProgram.Req req = new WXLaunchMiniProgram.Req();
+        req.userName = userName; // 填小程序原始id
+        req.path = path;                  //拉起小程序页面的可带参路径，不填默认拉起小程序首页
+        req.miniprogramType = minProgramType;// 可选打开 开发版，体验版和正式版
+        callback.invoke(null, api.sendReq(req));
+    }
     private void __jsonToImageMedia(String imageUrl, final MediaObjectCallback callback) {
         Uri imageUri;
         try {
