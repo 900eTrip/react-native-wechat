@@ -128,6 +128,7 @@ export const isWXAppSupportApi = wrapApi(WeChat.isWXAppSupportApi);
  */
 export function launchMiniProgram(userName, path, minProgramType) {
     return new Promise((resolve, reject) => {
+        console.log(WeChat);
         WeChat.launchMiniProgram(userName, path, minProgramType, () => {
     })
     emitter.once('WXLaunchMiniProgram.Resp', resp => {
