@@ -120,6 +120,27 @@ export const isWXAppInstalled = wrapApi(WeChat.isWXAppInstalled);
 export const isWXAppSupportApi = wrapApi(WeChat.isWXAppSupportApi);
 
 /**
+ *
+ * @param userName //小程序原始id
+ * @param path 页面路径
+ * @param minProgramType //0正式 1测试 2预览)
+ * @returns {Promise}
+ */
+export function launchMiniProgram(userName, path, minProgramType) {
+    return new Promise((resolve, reject) => {
+        WeChat.launchMiniProgram(userName, path, minProgramType, () => {
+    })
+    emitter.once('WXLaunchMiniProgram.Resp', resp => {
+        if (resp.errCode === 0) {
+        resolve(resp);
+    } else {
+        reject(new WechatError(resp));
+    }
+});
+})
+}
+
+/**
  * Get the wechat app installed url
  * @method getWXAppInstallUrl
  * @return {String} the wechat app installed url
@@ -267,7 +288,7 @@ export function pay(data) {
   correct('noncestr', 'nonceStr');
   correct('partnerid', 'partnerId');
   correct('timestamp', 'timeStamp');
-  
+
   // FIXME(94cstyles)
   // Android requires the type of the timeStamp field to be a string
   if (Platform.OS === 'android') data.timeStamp = String(data.timeStamp)
